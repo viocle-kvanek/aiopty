@@ -1,11 +1,12 @@
 package native
 
 import (
-	"github.com/iyzyi/aiopty/utils/ioctl"
 	"os"
 	"strconv"
 	"syscall"
 	"unsafe"
+
+	"github.com/viocle-kvanek/aiopty/utils/ioctl"
 )
 
 // See https://codebrowser.dev/glibc/glibc/sysdeps/unix/sysv/linux/ptsname.c.html#54

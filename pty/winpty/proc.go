@@ -6,6 +6,7 @@ package winpty
 import (
 	"fmt"
 	"path/filepath"
+	"sync"
 	"syscall"
 )
 
@@ -53,11 +54,17 @@ var (
 	winpty_free                     *syscall.LazyProc
 )
 
-func loadWinPty() (err error) {
-	if modWinPty != nil {
-		return
-	}
+var (
+	loadOnce sync.Once
+	loadErr  error
+)
 
+func loadWinPty() error {
+	loadOnce.Do(func() { loadErr = doLoadWinPty() })
+	return loadErr
+}
+
+func doLoadWinPty() (err error) {
 	// If the golang version is at least 1.16, winpty library files in ./bin/arch will be automatically
 	// embedded and released; Otherwise, they need to be manually placed in the directory where the
 	// current program is located. When placing them manually, ensure that the architecture matches.
@@ -107,5 +114,17 @@ func loadWinPty() (err error) {
 }
 
 func isLibAvailable() bool {
-	return winpty_error_code != nil && winpty_error_code.Find() == nil
+	procs := []*syscall.LazyProc{
+		winpty_error_code, winpty_error_msg, winpty_error_free,
+		winpty_config_new, winpty_config_free, winpty_config_set_initial_size,
+		winpty_open, winpty_conin_name, winpty_conout_name,
+		winpty_spawn_config_new, winpty_spawn_config_free, winpty_spawn,
+		winpty_set_size, winpty_free,
+	}
+	for _, p := range procs {
+		if p == nil || p.Find() != nil {
+			return false
+		}
+	}
+	return true
 }

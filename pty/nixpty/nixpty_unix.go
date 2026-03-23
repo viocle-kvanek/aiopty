@@ -5,13 +5,14 @@ package nixpty
 
 import (
 	"fmt"
-	"github.com/iyzyi/aiopty/pty/common"
-	"github.com/iyzyi/aiopty/utils/ioctl"
-	"github.com/iyzyi/aiopty/utils/log"
 	"os"
 	"os/exec"
 	"syscall"
 	"unsafe"
+
+	"github.com/viocle-kvanek/aiopty/pty/common"
+	"github.com/viocle-kvanek/aiopty/utils/ioctl"
+	"github.com/viocle-kvanek/aiopty/utils/log"
 )
 
 func openWithOptions(opt *common.Options) (p *NixPty, err error) {
@@ -39,7 +40,10 @@ func openWithOptions(opt *common.Options) (p *NixPty, err error) {
 		return nil, fmt.Errorf("failed to set block mode for pty: %v", err)
 	}
 
-	p.setSize(p.opt.Size)
+	if err = p.setSize(p.opt.Size); err != nil {
+		p.pty.Close()
+		return nil, fmt.Errorf("failed to set initial pty size: %v", err)
+	}
 
 	cmd := &exec.Cmd{
 		Path:   p.opt.Path,

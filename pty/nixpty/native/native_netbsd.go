@@ -1,10 +1,11 @@
 package native
 
 import (
-	"github.com/iyzyi/aiopty/utils/ioctl"
 	"os"
 	"syscall"
 	"unsafe"
+
+	"github.com/viocle-kvanek/aiopty/utils/ioctl"
 )
 
 // See https://www.unix.com/man-page/netbsd/4/ptm/

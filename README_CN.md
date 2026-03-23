@@ -1,14 +1,14 @@
 # aiopty
 
 <p>
-    <a href="https://github.com/iyzyi/aiopty/releases"><img src="https://img.shields.io/github/release/iyzyi/aiopty.svg" alt="Latest Release"></a>
-    <a href="https://pkg.go.dev/github.com/iyzyi/aiopty"><img src="https://godoc.org/github.com/golang/gddo?status.svg" alt="Go Docs"></a>
-    <a href="https://goreportcard.com/report/github.com/iyzyi/aiopty"><img src="https://goreportcard.com/badge/github.com/iyzyi/aiopty" alt="Go Report Card"></a>
+    <a href="https://github.com/viocle-kvanek/aiopty/releases"><img src="https://img.shields.io/github/release/iyzyi/aiopty.svg" alt="Latest Release"></a>
+    <a href="https://pkg.go.dev/github.com/viocle-kvanek/aiopty"><img src="https://godoc.org/github.com/golang/gddo?status.svg" alt="Go Docs"></a>
+    <a href="https://goreportcard.com/report/github.com/viocle-kvanek/aiopty"><img src="https://goreportcard.com/badge/github.com/viocle-kvanek/aiopty" alt="Go Report Card"></a>
 </p>
 
 (All in One) Pty & Terminal package for Go with an encrypted remote shell as example.
 
-[Eng](https://github.com/iyzyi/aiopty) | 中文
+[Eng](https://github.com/viocle-kvanek/aiopty) | 中文
 
 ## Features
 
@@ -24,9 +24,9 @@
 package main
 
 import (
-	"github.com/iyzyi/aiopty/pty"
-	"github.com/iyzyi/aiopty/term"
-	"github.com/iyzyi/aiopty/utils/log"
+	"github.com/viocle-kvanek/aiopty/pty"
+	"github.com/viocle-kvanek/aiopty/term"
+	"github.com/viocle-kvanek/aiopty/utils/log"
 	"io"
 	"os"
 )
@@ -88,7 +88,7 @@ func main() {
 
 ## Release
 
-基于此package，我开发并发布了一个支持正向和反向TCP连接的加密远程shell作为示例。可见[Releases](https://github.com/iyzyi/aiopty/releases)。下面介绍如何使用。
+基于此package，我开发并发布了一个支持正向和反向TCP连接的加密远程shell作为示例。可见[Releases](https://github.com/viocle-kvanek/aiopty/releases)。下面介绍如何使用。
 
 ```
 使用方法:
@@ -125,5 +125,5 @@ aiopty-windows-amd64.exe master -c 127.0.0.1:50505 -k secret
 
 ## License
 
-该package基于[MIT许可](https://github.com/iyzyi/aiopty/blob/master/LICENSE)发布。
+该package基于[MIT许可](https://github.com/viocle-kvanek/aiopty/blob/master/LICENSE)发布。
 

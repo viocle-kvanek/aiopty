@@ -5,10 +5,11 @@
 package nixpty
 
 import (
-	"github.com/iyzyi/aiopty/pty/nixpty/native"
-	"github.com/iyzyi/aiopty/utils/log"
 	"os"
 	"syscall"
+
+	"github.com/viocle-kvanek/aiopty/pty/nixpty/native"
+	"github.com/viocle-kvanek/aiopty/utils/log"
 )
 
 // Open returns a control pty(ptm) and the linked process tty(pts).

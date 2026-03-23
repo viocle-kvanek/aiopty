@@ -2,8 +2,10 @@ package winpty
 
 import (
 	"fmt"
-	"github.com/iyzyi/aiopty/pty/common"
 	"os"
+	"sync"
+
+	"github.com/viocle-kvanek/aiopty/pty/common"
 )
 
 var errUnsupported = fmt.Errorf("unsupported os or arch")
@@ -14,6 +16,7 @@ type WinPty struct {
 	conin    *os.File
 	conout   *os.File
 	process  uintptr
+	mu       sync.Mutex
 	isClosed bool
 }
 

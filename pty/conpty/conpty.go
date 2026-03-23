@@ -1,9 +1,10 @@
 package conpty
 
 import (
-	"github.com/iyzyi/aiopty/pty/common"
 	"os"
 	"unsafe"
+
+	"github.com/viocle-kvanek/aiopty/pty/common"
 )
 
 type ConPty struct {
@@ -12,6 +13,7 @@ type ConPty struct {
 	pipeIn        *os.File
 	pipeOut       *os.File
 	process       *os.Process
+	pid           int // stored immediately after process creation to allow killing before ClosePseudoConsole
 	isClosed      bool
 	exit          chan struct{}
 }

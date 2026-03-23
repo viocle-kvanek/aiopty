@@ -4,7 +4,6 @@
 package winpty
 
 import (
-	"embed"
 	"errors"
 	"os"
 	"path"
@@ -12,17 +11,15 @@ import (
 	"runtime"
 )
 
-//go:embed bin/*
-var f embed.FS
-
 func extractWinPty() (dir string, err error) {
 	var label string
 	arch := runtime.GOARCH
-	if arch == "386" {
+	switch arch {
+	case "386":
 		label = "ia32"
-	} else if arch == "amd64" {
+	case "amd64":
 		label = "x64"
-	} else {
+	default:
 		return "", errUnsupported
 	}
 

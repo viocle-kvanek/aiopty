@@ -2,11 +2,12 @@ package main
 
 import (
 	"encoding/binary"
-	"github.com/iyzyi/aiopty/utils/log"
 	"io"
 	"net"
 	"sync"
 	"time"
+
+	"github.com/viocle-kvanek/aiopty/utils/log"
 )
 
 func createClientConn(addr string) (conn net.Conn, err error) {

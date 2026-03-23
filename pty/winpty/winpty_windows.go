@@ -2,11 +2,12 @@ package winpty
 
 import (
 	"fmt"
-	"github.com/iyzyi/aiopty/pty/common"
-	"github.com/iyzyi/aiopty/utils/log"
 	"strings"
 	"syscall"
 	"unsafe"
+
+	"github.com/viocle-kvanek/aiopty/pty/common"
+	"github.com/viocle-kvanek/aiopty/utils/log"
 )
 
 func openWithOptions(opt *common.Options) (p *WinPty, err error) {
@@ -33,17 +34,24 @@ func openWithOptions(opt *common.Options) (p *WinPty, err error) {
 
 	p.conin, p.conout, err = getPipe(p.pty)
 	if err != nil {
+		winpty_free.Call(p.pty)
 		return
 	}
 
 	cmdline := strings.Join(p.opt.Args, " ")
 	spawnConfig, err := newSpawnConfig(_WINPTY_SPAWN_FLAG_AUTO_SHUTDOWN, p.opt.Path, cmdline, p.opt.Dir, p.opt.Env)
 	if err != nil {
+		p.conin.Close()
+		p.conout.Close()
+		winpty_free.Call(p.pty)
 		return
 	}
 
 	p.process, err = spawnProcess(p.pty, spawnConfig)
 	if err != nil {
+		p.conin.Close()
+		p.conout.Close()
+		winpty_free.Call(p.pty)
 		return
 	}
 
@@ -62,6 +70,9 @@ func (p *WinPty) setSize(size *common.WinSize) (err error) {
 }
 
 func (p *WinPty) close() (err error) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
 	if p.isClosed {
 		return
 	}

@@ -3,11 +3,12 @@ package main
 import (
 	"encoding/binary"
 	"fmt"
-	"github.com/iyzyi/aiopty/term"
 	"io"
 	"net"
 	"os"
 	"sync"
+
+	"github.com/viocle-kvanek/aiopty/term"
 )
 
 type Master struct {

@@ -3,12 +3,13 @@ package main
 import (
 	"encoding/binary"
 	"fmt"
-	"github.com/iyzyi/aiopty/pty"
-	"github.com/iyzyi/aiopty/utils/log"
 	"io"
 	"net"
 	"strings"
 	"sync"
+
+	"github.com/viocle-kvanek/aiopty/pty"
+	"github.com/viocle-kvanek/aiopty/utils/log"
 )
 
 type Slave struct {

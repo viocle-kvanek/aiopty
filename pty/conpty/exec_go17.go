@@ -26,7 +26,7 @@ var zeroProcAttr syscall.ProcAttr
 var zeroSysProcAttr syscall.SysProcAttr
 
 // func StartProcess(argv0 string, argv []string, attr *syscall.ProcAttr) (pid int, handle uintptr, err error) {
-func startProcessWithConPty(argv0 string, argv []string, attr *syscall.ProcAttr, pseudoConsole *syscall.Handle) (pid int, handle uintptr, err error) {
+func (p *ConPty) startProcessWithConPty(argv0 string, argv []string, attr *syscall.ProcAttr, pseudoConsole *syscall.Handle) (pid int, handle uintptr, err error) {
 	if len(argv0) == 0 {
 		return 0, 0, syscall.EWINDOWS
 	}
@@ -95,11 +95,11 @@ func startProcessWithConPty(argv0 string, argv []string, attr *syscall.ProcAttr,
 	syscall.ForkLock.Lock()
 	defer syscall.ForkLock.Unlock()
 
-	p, _ := syscall.GetCurrentProcess()
+	proc, _ := syscall.GetCurrentProcess()
 	fd := make([]syscall.Handle, len(attr.Files))
 	for i := range attr.Files {
 		if attr.Files[i] > 0 {
-			err := syscall.DuplicateHandle(p, syscall.Handle(attr.Files[i]), p, &fd[i], 0, true, syscall.DUPLICATE_SAME_ACCESS)
+			err := syscall.DuplicateHandle(proc, syscall.Handle(attr.Files[i]), proc, &fd[i], 0, true, syscall.DUPLICATE_SAME_ACCESS)
 			if err != nil {
 				return 0, 0, err
 			}
@@ -131,9 +131,18 @@ func startProcessWithConPty(argv0 string, argv []string, attr *syscall.ProcAttr,
 
 	pi := new(syscall.ProcessInformation)
 
-	//flags := sys.CreationFlags | CREATE_UNICODE_ENVIRONMENT
 	flags := sys.CreationFlags | syscall.CREATE_UNICODE_ENVIRONMENT | _EXTENDED_STARTUPINFO_PRESENT
-	err = syscall.CreateProcess(argv0p, argvp, nil, nil, true, flags, createEnvBlock(attr.Env), dirp, &si.StartupInfo, pi)
+	if p.opt != nil && p.opt.NewProcessGroup {
+		// CREATE_NEW_PROCESS_GROUP isolates the child in its own process group so that
+		// console control events (CTRL_CLOSE_EVENT) generated when ClosePseudoConsole
+		// is called do not propagate back to the parent process.
+		flags |= syscall.CREATE_NEW_PROCESS_GROUP
+	}
+	envBlock, err := createEnvBlock(attr.Env)
+	if err != nil {
+		return 0, 0, err
+	}
+	err = syscall.CreateProcess(argv0p, argvp, nil, nil, true, flags, envBlock, dirp, &si.StartupInfo, pi)
 	if err != nil {
 		return 0, 0, err
 	}
@@ -159,12 +168,18 @@ func makeCmdLine(args []string) string {
 // the representation required by CreateProcess: a sequence of NUL
 // terminated strings followed by a nil.
 // Last bytes are two UCS-2 NULs, or four NUL bytes.
-func createEnvBlock(envv []string) *uint16 {
+// If any string contains a NUL, it returns (nil, EINVAL).
+func createEnvBlock(envv []string) (*uint16, error) {
 	if len(envv) == 0 {
-		return &utf16.Encode([]rune("\x00\x00"))[0]
+		return &utf16.Encode([]rune("\x00\x00"))[0], nil
 	}
 	length := 0
 	for _, s := range envv {
+		for j := 0; j < len(s); j++ {
+			if s[j] == 0 {
+				return nil, syscall.EINVAL
+			}
+		}
 		length += len(s) + 1
 	}
 	length += 1
@@ -179,7 +194,7 @@ func createEnvBlock(envv []string) *uint16 {
 	}
 	copy(b[i:i+1], []byte{0})
 
-	return &utf16.Encode([]rune(string(b)))[0]
+	return &utf16.Encode([]rune(string(b)))[0], nil
 }
 
 func isSlash(c uint8) bool {

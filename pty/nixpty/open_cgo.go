@@ -14,9 +14,10 @@ package nixpty
 import "C"
 
 import (
-	"github.com/iyzyi/aiopty/utils/log"
 	"os"
 	"syscall"
+
+	"github.com/viocle-kvanek/aiopty/utils/log"
 )
 
 // Open returns a control pty(ptm) and the linked process tty(pts).
@@ -43,5 +44,10 @@ func open() (ptm *os.File, pts *os.File, err error) {
 	ptsname := C.GoString(C.ptsname(ptmFd))
 	ptm = os.NewFile(uintptr(ptmFd), "ptm")
 	pts, err = os.OpenFile(ptsname, syscall.O_RDWR|syscall.O_NOCTTY|syscall.O_CLOEXEC, 0)
+	if err != nil {
+		ptm.Close()
+		ptm = nil
+		return
+	}
 	return
 }

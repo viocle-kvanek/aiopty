@@ -2,12 +2,13 @@ package pty
 
 import (
 	"fmt"
-	"github.com/iyzyi/aiopty/pty/common"
-	"github.com/iyzyi/aiopty/pty/conpty"
-	"github.com/iyzyi/aiopty/pty/nixpty"
-	"github.com/iyzyi/aiopty/pty/winpty"
-	"github.com/iyzyi/aiopty/utils/log"
 	"runtime"
+
+	"github.com/viocle-kvanek/aiopty/pty/common"
+	"github.com/viocle-kvanek/aiopty/pty/conpty"
+	"github.com/viocle-kvanek/aiopty/pty/nixpty"
+	"github.com/viocle-kvanek/aiopty/pty/winpty"
+	"github.com/viocle-kvanek/aiopty/utils/log"
 )
 
 // Options contains the necessary information to run Pty
@@ -37,6 +38,9 @@ type Options struct {
 	// Type is used to determine which type of PTY (nixpty, conpty, or wintpy) to use.
 	// By default, it is set to AUTO for automatic selection.
 	Type PtyType
+
+	// NewProcessGroup if true, sets the CREATE_NEW_PROCESS_GROUP flag when creating the CONPTY process, to prevent an unclean exit from killing the parent process
+	NewProcessGroup bool
 }
 
 type WinSize struct {
@@ -98,11 +102,12 @@ func OpenWithOptions(opt *Options) (p *Pty, err error) {
 	}
 
 	_opt := &common.Options{
-		Path: opt.Path,
-		Args: opt.Args,
-		Dir:  opt.Dir,
-		Env:  opt.Env,
-		Size: size,
+		Path:            opt.Path,
+		Args:            opt.Args,
+		Dir:             opt.Dir,
+		Env:             opt.Env,
+		Size:            size,
+		NewProcessGroup: opt.NewProcessGroup,
 	}
 
 	err = common.InitOptions(_opt)
@@ -118,6 +123,7 @@ func OpenWithOptions(opt *Options) (p *Pty, err error) {
 		Cols: _opt.Size.Cols,
 		Rows: _opt.Size.Rows,
 	}
+	opt.NewProcessGroup = _opt.NewProcessGroup
 
 	switch opt.Type {
 	case NIXPTY:
@@ -137,7 +143,6 @@ func OpenWithOptions(opt *Options) (p *Pty, err error) {
 	log.Debug("Path: %v", opt.Path)
 	log.Debug("Args: %v", opt.Args)
 	log.Debug("Dir: %v", opt.Dir)
-	log.Debug("Env: %v", opt.Env)
 	log.Debug("Size: %v", opt.Size)
 	log.Debug("Type: %v", opt.Type)
 

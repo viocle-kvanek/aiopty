@@ -17,10 +17,9 @@
 
 package conpty
 
-import "syscall"
-
 import (
 	"runtime"
+	"syscall"
 	"unicode/utf16"
 	"unsafe"
 )
@@ -45,7 +44,7 @@ var zeroProcAttr syscall.ProcAttr
 var zeroSysProcAttr syscall.SysProcAttr
 
 // func StartProcess(argv0 string, argv []string, attr *ProcAttr) (pid int, handle uintptr, err error)
-func startProcessWithConPty(argv0 string, argv []string, attr *syscall.ProcAttr, pseudoConsole *syscall.Handle) (pid int, handle uintptr, err error) {
+func (p *ConPty) startProcessWithConPty(argv0 string, argv []string, attr *syscall.ProcAttr, pseudoConsole *syscall.Handle) (pid int, handle uintptr, err error) {
 	if len(argv0) == 0 {
 		return 0, 0, syscall.EWINDOWS
 	}
@@ -119,8 +118,8 @@ func startProcessWithConPty(argv0 string, argv []string, attr *syscall.ProcAttr,
 	// bit is not checked.
 	isLegacyWin7ConsoleHandle := func(handle syscall.Handle) bool { return isWin7 && handle&0x10000003 == 3 }
 
-	p, _ := syscall.GetCurrentProcess()
-	parentProcess := p
+	proc, _ := syscall.GetCurrentProcess()
+	parentProcess := proc
 	if sys.ParentProcess != 0 {
 		parentProcess = sys.ParentProcess
 	}
@@ -131,11 +130,11 @@ func startProcessWithConPty(argv0 string, argv []string, attr *syscall.ProcAttr,
 
 			// On Windows 7, console handles aren't real handles, and can only be duplicated
 			// into the current process, not a parent one, which amounts to the same thing.
-			if parentProcess != p && isLegacyWin7ConsoleHandle(syscall.Handle(attr.Files[i])) {
-				destinationProcessHandle = p
+			if parentProcess != proc && isLegacyWin7ConsoleHandle(syscall.Handle(attr.Files[i])) {
+				destinationProcessHandle = proc
 			}
 
-			err := syscall.DuplicateHandle(p, syscall.Handle(attr.Files[i]), destinationProcessHandle, &fd[i], 0, true, syscall.DUPLICATE_SAME_ACCESS)
+			err := syscall.DuplicateHandle(proc, syscall.Handle(attr.Files[i]), destinationProcessHandle, &fd[i], 0, true, syscall.DUPLICATE_SAME_ACCESS)
 			if err != nil {
 				return 0, 0, err
 			}
@@ -209,6 +208,12 @@ func startProcessWithConPty(argv0 string, argv []string, attr *syscall.ProcAttr,
 
 	pi := new(syscall.ProcessInformation)
 	flags := sys.CreationFlags | syscall.CREATE_UNICODE_ENVIRONMENT | _EXTENDED_STARTUPINFO_PRESENT
+	if p.opt != nil && p.opt.NewProcessGroup {
+		// CREATE_NEW_PROCESS_GROUP isolates the child in its own process group so that
+		// console control events (CTRL_CLOSE_EVENT) generated when ClosePseudoConsole
+		// is called do not propagate back to the parent process.
+		flags |= syscall.CREATE_NEW_PROCESS_GROUP
+	}
 	if sys.Token != 0 {
 		err = syscall.CreateProcessAsUser(sys.Token, argv0p, argvp, sys.ProcessAttributes, sys.ThreadAttributes, willInheritHandles, flags, envBlock, dirp, &si.StartupInfo, pi)
 	} else {
@@ -306,9 +311,11 @@ func createEnvBlock(envv []string) (*uint16, error) {
 	}
 	length := 0
 	for _, s := range envv {
-		//if bytealg.IndexByteString(s, 0) != -1 {
-		//	return nil, EINVAL
-		//}
+		for j := 0; j < len(s); j++ {
+			if s[j] == 0 {
+				return nil, syscall.EINVAL
+			}
+		}
 		length += len(s) + 1
 	}
 	length += 1

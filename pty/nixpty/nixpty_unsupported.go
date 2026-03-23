@@ -5,7 +5,8 @@ package nixpty
 
 import (
 	"fmt"
-	"github.com/iyzyi/aiopty/pty/common"
+
+	"github.com/viocle-kvanek/aiopty/pty/common"
 )
 
 var errUnsupported = fmt.Errorf("unsupported os or arch")

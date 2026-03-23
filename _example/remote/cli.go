@@ -108,7 +108,7 @@ func cliParse(args []string) (*cliArgs, error) {
 
 func usage() {
 	fmt.Print(
-		"aiopty example: remote shell (https://github.com/iyzyi/aiopty)\n" +
+		"aiopty example: remote shell (https://github.com/viocle-kvanek/aiopty)\n" +
 			"Usage: \n" +
 			"    1) aiopty master -l/-c ADDRESS [-k KEY] [-d]\n" +
 			"    2) aiopty slave -l/-c ADDRESS --cmd CMDLINE [-k KEY] [-t TYPE] [-d]\n" +

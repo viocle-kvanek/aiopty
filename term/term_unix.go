@@ -4,12 +4,13 @@
 package term
 
 import (
-	"github.com/iyzyi/aiopty/term/export"
-	"github.com/iyzyi/aiopty/utils/ioctl"
 	"os"
 	"os/signal"
 	"syscall"
 	"unsafe"
+
+	"github.com/viocle-kvanek/aiopty/term/export"
+	"github.com/viocle-kvanek/aiopty/utils/ioctl"
 )
 
 type fields struct {

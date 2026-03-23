@@ -1,9 +1,11 @@
 package native
 
 import (
-	"github.com/iyzyi/aiopty/utils/ioctl"
+	"fmt"
 	"os"
 	"unsafe"
+
+	"github.com/viocle-kvanek/aiopty/utils/ioctl"
 )
 
 // See https://github.com/openbsd/src/blob/master/lib/libc/stdlib/posix_pty.c
@@ -37,7 +39,11 @@ func Unlockpt(ptm *os.File) error {
 func Ptsname(ptm *os.File) (string, error) {
 	// e.g. /dev/ptyp4 -> /dev/ttyp4
 	ptsname := []byte(ptm.Name())
-	ptsname[len("/dev/")] = 't'
+	const prefix = "/dev/"
+	if len(ptsname) <= len(prefix) {
+		return "", fmt.Errorf("unexpected ptm name: %q", ptm.Name())
+	}
+	ptsname[len(prefix)] = 't'
 	return string(ptsname), nil
 }
 

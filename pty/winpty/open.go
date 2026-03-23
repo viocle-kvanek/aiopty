@@ -5,12 +5,13 @@ package winpty
 
 import (
 	"fmt"
-	"github.com/iyzyi/aiopty/pty/common"
 	"os"
 	"runtime"
 	"syscall"
 	"unicode/utf16"
 	"unsafe"
+
+	"github.com/viocle-kvanek/aiopty/pty/common"
 )
 
 func newAgentConfig(flags uint32, size *common.WinSize) (agentConfig uintptr, err error) {
@@ -136,6 +137,7 @@ func spawnProcess(pty uintptr, spawnConfig uintptr) (process uintptr, err error)
 	if res == 0 {
 		return 0, fmt.Errorf("failed to spawn process, err=%s, GetLastError=%v", getErrorMsg(errPtr), errCreateProcess)
 	}
+	syscall.CloseHandle(syscall.Handle(threadHandle))
 	return processHandle, nil
 }
 

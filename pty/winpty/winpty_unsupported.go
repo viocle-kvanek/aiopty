@@ -4,7 +4,7 @@
 package winpty
 
 import (
-	"github.com/iyzyi/aiopty/pty/common"
+	"github.com/viocle-kvanek/aiopty/pty/common"
 )
 
 func openWithOptions(opt *common.Options) (*WinPty, error) {

@@ -1,9 +1,10 @@
 package native
 
 import (
-	"github.com/iyzyi/aiopty/utils/ioctl"
 	"os"
 	"unsafe"
+
+	"github.com/viocle-kvanek/aiopty/utils/ioctl"
 )
 
 // See https://github.com/DragonFlyBSD/DragonFlyBSD/blob/master/lib/libc/stdlib/ptsname.c

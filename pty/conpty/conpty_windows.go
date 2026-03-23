@@ -2,11 +2,12 @@ package conpty
 
 import (
 	"fmt"
-	"github.com/iyzyi/aiopty/pty/common"
-	"github.com/iyzyi/aiopty/utils/log"
 	"os"
 	"syscall"
 	"unsafe"
+
+	"github.com/viocle-kvanek/aiopty/pty/common"
+	"github.com/viocle-kvanek/aiopty/utils/log"
 )
 
 func openWithOptions(opt *common.Options) (p *ConPty, err error) {
@@ -43,6 +44,8 @@ func openWithOptions(opt *common.Options) (p *ConPty, err error) {
 	// create conpty
 	err = createPseudoConsole(packWinSize(p.opt.Size), syscall.Handle(ptyIn.Fd()), syscall.Handle(ptyOut.Fd()), p.getPseudoConsole())
 	if err != nil {
+		p.pipeIn.Close()
+		p.pipeOut.Close()
 		return
 	}
 
@@ -53,10 +56,13 @@ func openWithOptions(opt *common.Options) (p *ConPty, err error) {
 		Sys:   nil,
 	}
 
-	pid, _, err := startProcessWithConPty(p.opt.Path, p.opt.Args, attr, p.getPseudoConsole())
+	pid, _, err := p.startProcessWithConPty(p.opt.Path, p.opt.Args, attr, p.getPseudoConsole())
 	if err != nil {
+		p.pipeIn.Close()
+		p.pipeOut.Close()
 		return
 	}
+	p.pid = pid
 
 	// Tests revealed that when the terminal corresponding to ConPty exits, the read & write pipes of ConPty
 	// are not closed, causing both io.Copy operations to be blocked. Therefore, once we detect that the
@@ -81,6 +87,16 @@ func (p *ConPty) setSize(size *common.WinSize) (err error) {
 func (p *ConPty) close() (err error) {
 	if p.isClosed {
 		return
+	}
+
+	// Kill the child process before closing the pseudo-console. On Windows Server 2022,
+	// calling ClosePseudoConsole while a process is still attached generates CTRL_CLOSE_EVENT
+	// which propagates back to the creating process and causes the Go runtime to call os.Exit.
+	// Killing the child first ensures no processes are attached when ClosePseudoConsole is called.
+	if p.pid > 0 {
+		if proc, findErr := os.FindProcess(p.pid); findErr == nil {
+			_ = proc.Kill()
+		}
 	}
 
 	err = closePseudoConsole(*p.getPseudoConsole())

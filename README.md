@@ -1,14 +1,14 @@
 # aiopty
 
 <p>
-    <a href="https://github.com/iyzyi/aiopty/releases"><img src="https://img.shields.io/github/release/iyzyi/aiopty.svg" alt="Latest Release"></a>
-    <a href="https://pkg.go.dev/github.com/iyzyi/aiopty"><img src="https://godoc.org/github.com/golang/gddo?status.svg" alt="Go Docs"></a>
-    <a href="https://goreportcard.com/report/github.com/iyzyi/aiopty"><img src="https://goreportcard.com/badge/github.com/iyzyi/aiopty" alt="Go Report Card"></a>
+    <a href="https://github.com/viocle-kvanek/aiopty/releases"><img src="https://img.shields.io/github/release/iyzyi/aiopty.svg" alt="Latest Release"></a>
+    <a href="https://pkg.go.dev/github.com/viocle-kvanek/aiopty"><img src="https://godoc.org/github.com/golang/gddo?status.svg" alt="Go Docs"></a>
+    <a href="https://goreportcard.com/report/github.com/viocle-kvanek/aiopty"><img src="https://goreportcard.com/badge/github.com/viocle-kvanek/aiopty" alt="Go Report Card"></a>
 </p>
 
 (All in One) Pty & Terminal package for Go with an encrypted remote shell as example.
 
-Eng | [中文](https://github.com/iyzyi/aiopty/blob/master/README_CN.md)
+Eng | [中文](https://github.com/viocle-kvanek/aiopty/blob/master/README_CN.md)
 
 ## Features
 
@@ -24,9 +24,9 @@ Eng | [中文](https://github.com/iyzyi/aiopty/blob/master/README_CN.md)
 package main
 
 import (
-	"github.com/iyzyi/aiopty/pty"
-	"github.com/iyzyi/aiopty/term"
-	"github.com/iyzyi/aiopty/utils/log"
+	"github.com/viocle-kvanek/aiopty/pty"
+	"github.com/viocle-kvanek/aiopty/term"
+	"github.com/viocle-kvanek/aiopty/utils/log"
 	"io"
 	"os"
 )
@@ -88,7 +88,7 @@ func main() {
 
 ## Release
 
-Based on this package, I develop and release an encrypted remote shell as example that supports both forward and reverse TCP connections. See [Releases](https://github.com/iyzyi/aiopty/releases). Here is how to use it.
+Based on this package, I develop and release an encrypted remote shell as example that supports both forward and reverse TCP connections. See [Releases](https://github.com/viocle-kvanek/aiopty/releases). Here is how to use it.
 
 ```
 Usage:
@@ -126,5 +126,5 @@ Welcome to your issues and pull requests.
 
 ## License
 
-This package is released under the [MIT License](https://github.com/iyzyi/aiopty/blob/master/LICENSE).
+This package is released under the [MIT License](https://github.com/viocle-kvanek/aiopty/blob/master/LICENSE).
 

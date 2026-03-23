@@ -2,11 +2,12 @@ package term
 
 import (
 	"fmt"
-	"github.com/iyzyi/aiopty/term/color"
-	"github.com/iyzyi/aiopty/utils/log"
 	"syscall"
 	"time"
 	"unsafe"
+
+	"github.com/viocle-kvanek/aiopty/term/color"
+	"github.com/viocle-kvanek/aiopty/utils/log"
 )
 
 type fields struct {

@@ -1,10 +1,11 @@
 package native
 
 import (
-	"github.com/iyzyi/aiopty/utils/ioctl"
 	"os"
 	"syscall"
 	"unsafe"
+
+	"github.com/viocle-kvanek/aiopty/utils/ioctl"
 )
 
 // See https://github.com/freebsd/freebsd-src/blob/master/lib/libc/gen/fdevname.c

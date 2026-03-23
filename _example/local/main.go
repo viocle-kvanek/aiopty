@@ -1,11 +1,12 @@
 package main
 
 import (
-	"github.com/iyzyi/aiopty/pty"
-	"github.com/iyzyi/aiopty/term"
-	"github.com/iyzyi/aiopty/utils/log"
 	"io"
 	"os"
+
+	"github.com/viocle-kvanek/aiopty/pty"
+	"github.com/viocle-kvanek/aiopty/term"
+	"github.com/viocle-kvanek/aiopty/utils/log"
 )
 
 func main() {

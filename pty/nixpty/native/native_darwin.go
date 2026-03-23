@@ -1,10 +1,11 @@
 package native
 
 import (
-	"github.com/iyzyi/aiopty/utils/ioctl"
 	"os"
 	"syscall"
 	"unsafe"
+
+	"github.com/viocle-kvanek/aiopty/utils/ioctl"
 )
 
 // See https://opensource.apple.com/source/Libc/Libc-1353.60.8/stdlib/grantpt.c.auto.html

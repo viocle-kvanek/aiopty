@@ -1,3 +1,3 @@
-module github.com/iyzyi/aiopty
+module github.com/viocle-kvanek/aiopty
 
 go 1.16

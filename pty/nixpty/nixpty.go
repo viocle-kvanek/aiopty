@@ -1,8 +1,9 @@
 package nixpty
 
 import (
-	"github.com/iyzyi/aiopty/pty/common"
 	"os"
+
+	"github.com/viocle-kvanek/aiopty/pty/common"
 )
 
 type NixPty struct {

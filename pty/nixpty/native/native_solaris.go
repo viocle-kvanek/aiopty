@@ -2,12 +2,13 @@ package native
 
 import (
 	"fmt"
-	"github.com/iyzyi/aiopty/utils/ioctl"
 	"os"
 	"os/user"
 	"strconv"
 	"syscall"
 	"unsafe"
+
+	"github.com/viocle-kvanek/aiopty/utils/ioctl"
 )
 
 // See https://src.illumos.org/source/xref/illumos-gate/usr/src/lib/libc/port/gen/pt.c?r=7d8deab2
@@ -62,7 +63,9 @@ func Ptsname(ptm *os.File) (ptsname string, err error) {
 	// See https://www.cnblogs.com/zongzi10010/p/11945545.html
 	// See https://blog.csdn.net/zhoulaowu/article/details/14224429
 	var stat syscall.Stat_t
-	syscall.Fstat(int(ptm.Fd()), &stat)
+	if err = syscall.Fstat(int(ptm.Fd()), &stat); err != nil {
+		return
+	}
 	ptsname = PTSNAME + strconv.FormatUint(minor(stat.Rdev), 10)
 	return
 }

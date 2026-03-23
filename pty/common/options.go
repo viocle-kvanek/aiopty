@@ -28,6 +28,9 @@ type Options struct {
 
 	// Size is used to set the initial pty window size.
 	Size *WinSize
+
+	// NewProcessGroup if true, sets the CREATE_NEW_PROCESS_GROUP flag when creating the CONPTY process, to prevent an unclean exit from killing the parent process
+	NewProcessGroup bool
 }
 
 type WinSize struct {

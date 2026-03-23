@@ -3,7 +3,7 @@
 
 package term
 
-import "github.com/iyzyi/aiopty/term/export"
+import "github.com/viocle-kvanek/aiopty/term/export"
 
 const reqGetTermios = export.TCGETS
 const reqSetTermios = export.TCSETS

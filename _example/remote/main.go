@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/iyzyi/aiopty/utils/log"
 	"net"
 	"os"
+
+	"github.com/viocle-kvanek/aiopty/utils/log"
 )
 
 func main() {
